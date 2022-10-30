@@ -38,7 +38,13 @@ public class Member {
 		this.createdAt = Objects.requireNonNullElse(createdAt, LocalDateTime.now());
 	}
 
-	void validateNickname(final String nickname) {
+	public void changeNickname(final String nickname) {
+		Objects.requireNonNull(nickname);
+		validateNickname(nickname);
+		this.nickname = nickname;
+	}
+
+	private void validateNickname(final String nickname) {
 		Assert.isTrue(nickname.length() <= NAME_MAX_LENGTH, "닉네임은 10자를 넘길 수 없습니다.");
 	}
 }
