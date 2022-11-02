@@ -19,6 +19,13 @@ import org.springframework.stereotype.Repository;
 public class MemberRepository {
 
 	private static final String TABLE = "member";
+	public static final RowMapper<Member> rowMapper = (rs, rowNum) -> Member.builder()
+			.id(rs.getLong("id"))
+			.nickname(rs.getString("nickname"))
+			.email(rs.getString("email"))
+			.birthday(rs.getObject("birthday", LocalDate.class))
+			.createdAt(rs.getObject("createdAt", LocalDateTime.class))
+			.build();
 
 	private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
@@ -26,13 +33,6 @@ public class MemberRepository {
 		final var sql = String.format("SELECT * FROM %s WHERE id = :id", TABLE);
 		final var params = new MapSqlParameterSource()
 				.addValue("id", id);
-		final RowMapper<Member> rowMapper = (rs, rowNum) -> Member.builder()
-				.id(rs.getLong("id"))
-				.nickname(rs.getString("nickname"))
-				.email(rs.getString("email"))
-				.birthday(rs.getObject("birthday", LocalDate.class))
-				.createdAt(rs.getObject("createdAt", LocalDateTime.class))
-				.build();
 		final var member = namedParameterJdbcTemplate.queryForObject(sql, params, rowMapper);
 		return Optional.ofNullable(member);
 	}
@@ -50,7 +50,7 @@ public class MemberRepository {
 
 	private Member insert(final Member member) {
 		final SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(namedParameterJdbcTemplate.getJdbcTemplate())
-				.withTableName("member")
+				.withTableName(TABLE)
 				.usingGeneratedKeyColumns("id");
 		final SqlParameterSource params = new BeanPropertySqlParameterSource(member);
 		final var id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
@@ -64,7 +64,9 @@ public class MemberRepository {
 	}
 
 	private Member update(final Member member) {
-		// TODO
+		final var sql = String.format("UPDATE %s set email = :email, nickname = :nickname, birthday = :birthday WHERE id = :id", TABLE);
+		final var params = new BeanPropertySqlParameterSource(member);
+		namedParameterJdbcTemplate.update(sql, params);
 		return member;
 	}
 
