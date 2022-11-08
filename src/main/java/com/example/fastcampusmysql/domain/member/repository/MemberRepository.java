@@ -1,8 +1,11 @@
 package com.example.fastcampusmysql.domain.member.repository;
 
+import static java.util.Collections.emptyList;
+
 import com.example.fastcampusmysql.domain.member.entity.Member;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +38,15 @@ public class MemberRepository {
 				.addValue("id", id);
 		final var member = namedParameterJdbcTemplate.queryForObject(sql, params, rowMapper);
 		return Optional.ofNullable(member);
+	}
+
+	public List<Member> findAllByIdIn(final List<Long> ids) {
+		if (ids.isEmpty()) {
+			return emptyList();
+		}
+		final var sql = String.format("SELECT * FROM %s WHERE id in (:ids)", TABLE);
+		final var params = new MapSqlParameterSource().addValue("ids", ids);
+		return namedParameterJdbcTemplate.query(sql, params, rowMapper);
 	}
 
 	public Member save(final Member member) {
