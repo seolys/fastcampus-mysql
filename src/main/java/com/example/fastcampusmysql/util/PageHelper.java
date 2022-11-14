@@ -1,4 +1,4 @@
-package com.example.fastcampusmysql.domain;
+package com.example.fastcampusmysql.util;
 
 import java.util.List;
 import java.util.stream.Collectors;
