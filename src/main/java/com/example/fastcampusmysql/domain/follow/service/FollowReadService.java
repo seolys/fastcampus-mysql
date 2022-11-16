@@ -9,11 +9,15 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class FollowReadService {
-	
+
 	private final FollowRepository followRepository;
 
 	public List<Follow> getFollowings(final Long memberId) {
 		return followRepository.findAllByFromMemberId(memberId);
+	}
+
+	public List<Follow> getFollowers(final Long memberId) {
+		return followRepository.findAllByToMemberId(memberId);
 	}
 
 }
